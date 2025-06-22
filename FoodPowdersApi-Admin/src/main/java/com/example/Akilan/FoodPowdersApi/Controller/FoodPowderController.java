@@ -4,6 +4,7 @@ package com.example.Akilan.FoodPowdersApi.Controller;
 import com.example.Akilan.FoodPowdersApi.IO_Objects.FoodPowderRequest;
 import com.example.Akilan.FoodPowdersApi.IO_Objects.FoodPowderResponse;
 import com.example.Akilan.FoodPowdersApi.Service.FirebaseServiceImplementation;
+import com.example.Akilan.FoodPowdersApi.Service.FoodPowderService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,7 +22,7 @@ import java.util.concurrent.ExecutionException;
 public class FoodPowderController {
 
     @Autowired
-    private  FirebaseServiceImplementation firebaseServiceImplementation;
+    private FoodPowderService firebaseServiceImplementation;
 
     @PostMapping
     public FoodPowderResponse addFoodPowder( @RequestPart("food") String foodPowderString, @RequestPart("file") MultipartFile image) throws ExecutionException, InterruptedException, IOException {
