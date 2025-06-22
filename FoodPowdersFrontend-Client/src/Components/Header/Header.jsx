@@ -7,7 +7,7 @@ const Header = () => {
         <div className="container-fluid py-5">
             <h1 className="display-5 fw-bold">Order your food powder here.,</h1>
             <p className="col-md-8 fs-4">Discover the Best, Natural, Healthy food powders.</p>
-            <Link to="/explore" className='btn btn-primary btn-lg'>Explore Powders</Link>
+            <Link to="/explore" className='btn btn-primary'>Explore Powders</Link>
         </div>
     </div>
   )
