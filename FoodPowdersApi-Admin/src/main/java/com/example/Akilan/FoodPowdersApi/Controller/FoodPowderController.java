@@ -17,6 +17,7 @@ import java.util.concurrent.ExecutionException;
 
 @RestController
 @RequestMapping("/api/foodpowders")
+@CrossOrigin("*")
 public class FoodPowderController {
 
     @Autowired

@@ -13,19 +13,19 @@ export const assets = {
 
 export const categories =[
     {
-        category:'ChutneyPowder',
+        category:'Chutney Powder',
         icon: chutneypowder
     },
     {
-        category:'HealthMix',
+        category:'Health Mix',
         icon: healthmix
     },
     {
-        category:'MasalaPowder',
+        category:'Masala Powder',
         icon: masalapowder
     },
     {
-        category:'RicePowder',
+        category:'Rice Powder',
         icon: ricepowder
     }
 

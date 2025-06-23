@@ -2,14 +2,20 @@ import React, { useContext } from 'react'
 import { StoreContext } from '../../Context/StoreContext'
 import FoodPowderItem from '../FoodPowderItem/FoodPowderItem';
 
-const FoodPowderDisplay = () => {
+const FoodPowderDisplay = ({category, searchText}) => {
 
-  const {foodList} = useContext(StoreContext);
+  const {foodPowderList} = useContext(StoreContext);
+
+  const filterFoodPowders = foodPowderList.filter(powder =>
+    (category === 'All' || powder.category === category) && 
+    (powder.name.toLowerCase().includes(searchText.toLowerCase()))
+  );
+  
   return (
     <div className="container">
         <div className="row">
-            {foodList.length ? (
-                foodList.map((food, index) => {
+            {filterFoodPowders.length ? (
+                filterFoodPowders.map((food, index) => {
                     return(<FoodPowderItem 
                         key={index} 
                         name={food.name} 

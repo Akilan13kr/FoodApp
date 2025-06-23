@@ -1,9 +1,15 @@
-import React from 'react'
+import React, { useContext } from 'react'
+import { Link } from 'react-router-dom';
+import { StoreContext } from '../../Context/StoreContext';
 
 const FoodPowderItem = ({name, description, id, imageUrl, price}) => {
+    const {increaseQuantity, decreaseQuantity, quantities} = useContext(StoreContext);
+
     return(<div className="col-12 col-sm-6 col-md-4 col-lg-3 mb-4 d-flex justiy-content-center">
-                <div className="card" style={{"max-width": "320px"}}>
-                    <img src={imageUrl} className="card-img-top" alt="Product Image" height={300} width={60}/>
+                <div className="card" style={{"maxWidth": "320px" , "textDecoration":"none"}}>
+                    <Link to={"/food/"+id}>
+                        <img src={imageUrl} className="card-img-top" alt="Product Image" height={300} width={60}/>
+                    </Link>
                     <div className="card-body">
                         <h5 className="card-title">{name}</h5>
                         <p className="card-text">{description}</p>
@@ -20,8 +26,24 @@ const FoodPowderItem = ({name, description, id, imageUrl, price}) => {
                         </div>
                     </div>
                     <div className="card-footer d-flex justify-content-between bg-light">
-                        <button className="btn btn-primary btn-sm">View Detail</button>
-                        <button className="btn btn-outline-secondary btn-sm"><i className="bi bi-heart"></i></button>
+                        <Link className="btn btn-primary btn-sm" to={"/food/"+id}>View Detail</Link>
+                        {
+                            quantities[id] > 0 ? (
+                                <div className="d-flex align-items-center gap-2">
+                                    <button className="btn btn-danger btn-sm" onClick={() => decreaseQuantity(id)}>
+                                        <i className="bi bi-dash-circle"></i>
+                                    </button>
+                                    <span className="fw-bold">{quantities[id]}</span>
+                                    <button className="btn btn-success btn-sm" onClick={() => increaseQuantity(id)}>
+                                        <i className="bi bi-plus-circle"></i>
+                                    </button>
+                                </div>
+                            ) : (
+                                <button className="btn btn-primary btn-sm">
+                                    <i className="bi bi-plus-circle" onClick={() => increaseQuantity(id)}></i>
+                                </button>
+                            )
+                        }
                     </div>
                 </div>
             </div>);
