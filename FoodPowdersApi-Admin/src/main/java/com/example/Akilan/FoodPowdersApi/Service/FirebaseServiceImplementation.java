@@ -30,18 +30,16 @@ public class FirebaseServiceImplementation implements FoodPowderService{
     Firestore dbFirestore = null;
     Bucket bucket = null;
 
-    private void initiateFireStoreService(){
-         dbFirestore = FirestoreClient.getFirestore();
-    }
-
-    private void initiateStorageClient(){
+    public FirebaseServiceImplementation() {
+        dbFirestore = FirestoreClient.getFirestore();
         bucket = StorageClient.getInstance().bucket();
     }
 
 
+
     @Override
     public String uploadImage(MultipartFile imagefile) throws IOException {
-        initiateStorageClient();
+
         InputStream inputStream = imagefile.getInputStream();
         String fileExtension = imagefile.getOriginalFilename().substring(imagefile.getOriginalFilename().lastIndexOf(".") + 1);
         String key = UUID.randomUUID() + "." + fileExtension;
@@ -63,11 +61,9 @@ public class FirebaseServiceImplementation implements FoodPowderService{
 
     @Override
     public FoodPowderResponse addFoodPowder(FoodPowderRequest foodPowderRequest, MultipartFile imageFile) throws ExecutionException, InterruptedException, IOException {
-
         FoodPowderEntity newfoodPowderEntity = convertToEntity(foodPowderRequest);
         String imagepublicUrl = uploadImage(imageFile);
         newfoodPowderEntity.setImageUrl(imagepublicUrl);
-        initiateFireStoreService();
 
 
         DocumentReference docRef = dbFirestore.collection(COLLECTION_NAME).document();
@@ -87,7 +83,6 @@ public class FirebaseServiceImplementation implements FoodPowderService{
 
     @Override
     public List<FoodPowderResponse> readFoodPowders() throws ExecutionException, InterruptedException {
-        initiateFireStoreService();
         ApiFuture<QuerySnapshot> query = dbFirestore.collection(COLLECTION_NAME).get();
         QuerySnapshot querySnapshot = query.get();
 
@@ -97,7 +92,6 @@ public class FirebaseServiceImplementation implements FoodPowderService{
 
     @Override
     public FoodPowderResponse readFoodPowder(String id) throws ExecutionException, InterruptedException {
-        initiateFireStoreService();
 
         ApiFuture<DocumentSnapshot> query =  dbFirestore.collection(COLLECTION_NAME).document(id).get();
         DocumentSnapshot foodPowderDocument = query.get();
@@ -112,7 +106,6 @@ public class FirebaseServiceImplementation implements FoodPowderService{
 
     @Override
     public boolean deleteImage(String imageName) {
-        initiateStorageClient();
         Blob blob = bucket.get(imageName);
 
         if (blob == null || !blob.exists()) {

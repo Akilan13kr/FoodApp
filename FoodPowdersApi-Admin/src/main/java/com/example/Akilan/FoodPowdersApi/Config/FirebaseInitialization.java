@@ -1,4 +1,4 @@
-package com.example.Akilan.FoodPowdersApi.Firebase;
+package com.example.Akilan.FoodPowdersApi.Config;
 
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;

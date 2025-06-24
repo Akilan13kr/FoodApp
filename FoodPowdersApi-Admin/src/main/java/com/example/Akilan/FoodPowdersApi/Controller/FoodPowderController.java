@@ -5,6 +5,7 @@ import com.example.Akilan.FoodPowdersApi.IO_Objects.FoodPowderRequest;
 import com.example.Akilan.FoodPowdersApi.IO_Objects.FoodPowderResponse;
 import com.example.Akilan.FoodPowdersApi.Service.FirebaseServiceImplementation;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -16,12 +17,13 @@ import java.util.concurrent.ExecutionException;
 
 
 @RestController
+@AllArgsConstructor
 @RequestMapping("/api/foodpowders")
 @CrossOrigin("*")
 public class FoodPowderController {
 
     @Autowired
-    private  FirebaseServiceImplementation firebaseServiceImplementation;
+    private final FirebaseServiceImplementation firebaseServiceImplementation;
 
     @PostMapping
     public FoodPowderResponse addFoodPowder( @RequestPart("food") String foodPowderString, @RequestPart("file") MultipartFile image) throws ExecutionException, InterruptedException, IOException {
