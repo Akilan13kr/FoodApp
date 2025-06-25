@@ -7,4 +7,9 @@ import java.util.concurrent.ExecutionException;
 
 public interface UserService {
     UserRegisterResponse registerUser(UserRegisterRequest userRegisterRequest) throws ExecutionException, InterruptedException;
+
+    String findByUserId();
+
+
+
 }

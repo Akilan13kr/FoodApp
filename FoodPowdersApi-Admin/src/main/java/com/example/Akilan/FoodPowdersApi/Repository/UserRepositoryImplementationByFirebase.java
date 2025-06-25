@@ -1,34 +1,26 @@
-package com.example.Akilan.FoodPowdersApi.Service;
+package com.example.Akilan.FoodPowdersApi.Repository;
 
 import com.example.Akilan.FoodPowdersApi.Entity.UserEntity;
-import com.example.Akilan.FoodPowdersApi.Repository.UserRepository;
 import com.google.api.core.ApiFuture;
-import com.google.cloud.firestore.DocumentReference;
-import com.google.cloud.firestore.DocumentSnapshot;
-import com.google.cloud.firestore.Firestore;
-import com.google.cloud.firestore.QuerySnapshot;
+import com.google.cloud.firestore.*;
 import com.google.firebase.cloud.FirestoreClient;
-import lombok.AllArgsConstructor;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-import java.util.Collections;
 import java.util.concurrent.ExecutionException;
+@Component
+public class UserRepositoryImplementationByFirebase implements UserRepository{
 
-@Service
-@AllArgsConstructor
-public class AppUserDetailsService implements UserDetailsService {
+    public Firestore dbFirestore;
 
     private static final String COLLECTION_NAME = "Users";
 
+    public UserRepositoryImplementationByFirebase(){
+        dbFirestore = FirestoreClient.getFirestore();
+    }
 
-    @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Firestore dbFirestore = FirestoreClient.getFirestore();
 
+    public UserEntity findByEmail(String email) {
         try {
             // Query Firestore collection "Users" for document where email matches
             ApiFuture<QuerySnapshot> query = dbFirestore.collection(COLLECTION_NAME)
@@ -43,15 +35,29 @@ public class AppUserDetailsService implements UserDetailsService {
             // it take the 0 index of the document where email id is unique the logic of getting email is only one
             DocumentSnapshot document = querySnapshot.getDocuments().get(0);
 
-
-            String userEmail = document.getString("email");
-            String password = document.getString("password");
-
-            return new User(userEmail, password, Collections.emptyList());
+            UserEntity newuser = new UserEntity();
+            newuser.setId(document.getString("id"));
+            newuser.setEmail(document.getString("email"));
+            newuser.setName(document.getString("name"));
+            newuser.setPassword(document.getString("password"));
+            return newuser;
 
         } catch (InterruptedException | ExecutionException e) {
             Thread.currentThread().interrupt();
             throw new UsernameNotFoundException("Error fetching user data from Firebase", e);
         }
     }
+
+    public UserEntity addUser(UserEntity newUser) throws ExecutionException, InterruptedException {
+        DocumentReference docRef = dbFirestore.collection(COLLECTION_NAME).document();
+
+        newUser.setId(docRef.getId());
+        //save to firestore
+        ApiFuture<WriteResult> writeResult = docRef.set(newUser);
+
+        // Wait for the operation to complete
+        writeResult.get();
+        return newUser;
+    }
+
 }

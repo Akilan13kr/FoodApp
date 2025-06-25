@@ -3,7 +3,7 @@ package com.example.Akilan.FoodPowdersApi.Controller;
 
 import com.example.Akilan.FoodPowdersApi.IO_Objects.FoodPowderRequest;
 import com.example.Akilan.FoodPowdersApi.IO_Objects.FoodPowderResponse;
-import com.example.Akilan.FoodPowdersApi.Service.FirebaseServiceImplementation;
+import com.example.Akilan.FoodPowdersApi.Service.FoodPowderServiceImplementation;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,30 +23,30 @@ import java.util.concurrent.ExecutionException;
 public class FoodPowderController {
 
     @Autowired
-    private final FirebaseServiceImplementation firebaseServiceImplementation;
+    private final FoodPowderServiceImplementation foodPowderServiceImplementation;
 
     @PostMapping
     public FoodPowderResponse addFoodPowder( @RequestPart("food") String foodPowderString, @RequestPart("file") MultipartFile image) throws ExecutionException, InterruptedException, IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         FoodPowderRequest foodPowderRequest = null;
         foodPowderRequest = objectMapper.readValue(foodPowderString, FoodPowderRequest.class);
-        FoodPowderResponse foodPowderResponse = firebaseServiceImplementation.addFoodPowder(foodPowderRequest, image);
+        FoodPowderResponse foodPowderResponse = foodPowderServiceImplementation.addFoodPowder(foodPowderRequest, image);
         return foodPowderResponse;
     }
 
     @GetMapping
     public List<FoodPowderResponse> readFoodPowders() throws ExecutionException, InterruptedException {
-        return firebaseServiceImplementation.readFoodPowders();
+        return foodPowderServiceImplementation.readFoodPowders();
     }
 
     @GetMapping("/{id}")
     public FoodPowderResponse readFoodPowder(@PathVariable String id) throws ExecutionException, InterruptedException {
-        return firebaseServiceImplementation.readFoodPowder(id);
+        return foodPowderServiceImplementation.readFoodPowder(id);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteFoodPowder(@PathVariable String id) throws ExecutionException, InterruptedException {
-        firebaseServiceImplementation.deleteFood(id);
+        foodPowderServiceImplementation.deleteFood(id);
     }
 }

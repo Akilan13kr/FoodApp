@@ -10,15 +10,14 @@ import java.util.concurrent.ExecutionException;
 
 public interface FoodPowderService {
 
-    String uploadImage(MultipartFile imagefile) throws IOException;
-
     FoodPowderResponse addFoodPowder(FoodPowderRequest foodPowderRequest, MultipartFile imageFile) throws ExecutionException, InterruptedException, IOException;
 
     List<FoodPowderResponse> readFoodPowders() throws ExecutionException, InterruptedException;
 
     FoodPowderResponse readFoodPowder(String id) throws ExecutionException, InterruptedException;
 
-    boolean deleteImage(String imageName);
 
     void deleteFood(String id) throws ExecutionException, InterruptedException;
+
+
 }
