@@ -9,7 +9,7 @@ const Login = () => {
 
     const navigate = useNavigate();
 
-    const {setToken} = useContext(StoreContext);
+    const {setToken, loadCartData} = useContext(StoreContext);
 
     const [data, setData] = useState({
         email:'',
@@ -33,6 +33,7 @@ const Login = () => {
             toast.success('Logged In succuessfully');
             setToken(response.data.token);
             localStorage.setItem('token:',response.data.token);
+            await loadCartData(response.data.token);
             navigate("/");
         } else {
             toast.error('Please check your password and login.')
