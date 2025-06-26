@@ -4,11 +4,12 @@ import chutneypowder from './chutneypowder.jpg';
 import healthmix from './healthmix.jpg';
 import masalapowder from './masalapowder.jpg';
 import ricepowder from './ricepowder.jpg';
+import userIcon from './usericon.jpg';
 
 export const assets = {
     logo,
-    cart
-    
+    cart,
+    userIcon
 }
 
 export const categories =[

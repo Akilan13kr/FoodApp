@@ -6,10 +6,18 @@ import './Menubar.css';
 
 const Menubar = () => {
   const [active, setActive] = useState("home");
-  const {quantities} = useContext(StoreContext);
+
+  const {quantities, token, setToken} = useContext(StoreContext);
+
   const navigate = useNavigate();
 
   const uniqueItemsInCart = Object.values(quantities).filter(qty => qty > 0).length;
+
+  const logout = () => {
+      localStorage.removeItem('token:');
+      setToken('');
+      navigate('/');
+  };
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light">
   <div className="container">
@@ -36,8 +44,39 @@ const Menubar = () => {
               <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success">{uniqueItemsInCart}</span>
           </div>
         </Link>
-        <button className='btn btn-outline-primary' onClick={() => navigate('/login')}>Login</button>
-        <button className='btn btn-outline-success' onClick={() => navigate('/register')}>Register</button>
+        {!token ? (
+          <>
+            <button className='btn btn-outline-primary' onClick={() => navigate('/login')}>Login</button>
+            <button className='btn btn-outline-success' onClick={() => navigate('/register')}>Register</button>
+          </>
+        ) : (
+          <div className="dropdown text-end">
+            <button
+              className="btn dropdown-toggle"
+              type="button"
+              id="dropdownMenuButton"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
+              <img
+                src={assets.userIcon}  // insert avatar src
+                alt="usericon"
+                width={32}
+                height={32}
+                className="rounded-circle"
+              />
+            </button>
+            <ul className="dropdown-menu dropdown-menu-end cursor-pointer"  aria-labelledby="dropdownMenuButton">
+              <li>
+                <button className="dropdown-item" onClick={() => navigate('/myorders')}>Orders</button>
+              </li>
+              <li>
+                <button className="dropdown-item" onClick={logout}>Logout</button>
+              </li>
+            </ul>
+          </div>
+        )}
+
       </div>
     </div>
   </div>

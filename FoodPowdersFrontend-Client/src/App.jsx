@@ -1,5 +1,6 @@
 import React from 'react';
 import Menubar from './Components/Menubar/Menubar';
+import { ToastContainer, toast } from 'react-toastify';
 import {Route, Routes} from 'react-router-dom';
 import Home from './Pages/Home/Home';
 import Contact from './Pages/Contact/Contact';
@@ -16,6 +17,7 @@ const App = () => {
   return (
     <div>
       <Menubar />
+      <ToastContainer />
       <Routes>
         <Route path='/' element={<Home />}/>
         <Route path='/contact' element={<Contact />}/>

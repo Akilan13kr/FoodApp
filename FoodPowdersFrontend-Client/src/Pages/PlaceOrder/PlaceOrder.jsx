@@ -36,17 +36,17 @@ const PlaceOrder = () => {
                     </li>)
                 })
             }
-                <li class="list-group-item d-flex justify-content-between lh-sm">
+                <li className="list-group-item d-flex justify-content-between lh-sm">
                     <div>
                         <span>Tax (10%)</span>
                     </div>
-                    <span class="text-muted">&#8377;{tax.toFixed(2)}</span>
+                    <span className="text-muted">&#8377;{tax.toFixed(2)}</span>
                 </li>
-                <li class="list-group-item d-flex justify-content-between">
+                <li className="list-group-item d-flex justify-content-between">
                     <div>
                         <span>Shipping Charges</span>
                     </div>
-                    <span class="text-muted">&#8377;{subTotal === 0 ? 0.0 : shippingCharger.toFixed(2)}</span>
+                    <span className="text-muted">&#8377;{subTotal === 0 ? 0.0 : shippingCharger.toFixed(2)}</span>
                 </li>
                 <li className="list-group-item d-flex justify-content-between">
                     <span>Total (INR)</span>
