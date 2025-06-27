@@ -1,7 +1,7 @@
 import { createContext, useEffect, useState } from "react";
 import { fetchFoodPowderList } from "../Service/foodService";
 import axios from "axios";
-import { addToCart, removeQuantityFromCart } from "../Service/CartService";
+import { addToCart, getCartData, removeQuantityFromCart } from "../Service/CartService";
 
 
 export const StoreContext = createContext(null);
@@ -15,12 +15,12 @@ export const StoreContextProvider = (props) =>{
     // to make quantity used in the entire app we placed it in the storecontext 
     const increaseQuantity = async(foodId) => {
         setQuantities((prev) => ({...prev,[foodId]: (prev[foodId] || 0)+1}));
-        addToCart(foodId, token);
+        await addToCart(foodId, token);
     }
 
     const decreaseQuantity = async(foodId) =>{
         setQuantities((prev) => ({...prev, [foodId]: prev[foodId] > 0 ? prev[foodId] - 1 : 0}));
-        removeQuantityFromCart(foodId, token);
+        await removeQuantityFromCart(foodId, token);
     }
 
     const removeFromCart = (foodId) =>{
@@ -32,8 +32,8 @@ export const StoreContextProvider = (props) =>{
     };
 
     const loadCartData = async(token) => {
-        const response = await axios.get('http://localhost:8080/api/cart', {headers: {'Authorization': `Bearer ${token}`}});
-        setQuantities(response.data.items);
+        const items = await getCartData(token);
+        setQuantities(items);
     }
 
 
