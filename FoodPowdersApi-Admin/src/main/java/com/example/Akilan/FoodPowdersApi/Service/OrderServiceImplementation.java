@@ -44,7 +44,7 @@ public class OrderServiceImplementation implements OrderService {
 
         //Create Razorpay order
         JSONObject orderRequest = new JSONObject();
-        orderRequest.put("amount", newOrder.getAmount());
+        orderRequest.put("amount", newOrder.getAmount() * 100); //razorpay take 300 as 3 rupees because it take as paisa so we need to multiply 100 to make it 100s;
         orderRequest.put("currency", "INR");
         orderRequest.put("payment_capture", 1);
 

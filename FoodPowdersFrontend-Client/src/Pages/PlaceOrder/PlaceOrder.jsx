@@ -1,15 +1,152 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState} from 'react';
 import './PlaceOrder.css';
 import { StoreContext } from '../../Context/StoreContext';
 import { assets } from '../../assets/assets';
 import { calculateCartTotals } from '../../Util/CartUtil';
+import { toast } from 'react-toastify';
+import { RAZORPAY_KEY } from '../../Util/Constant';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import { createUserOrderWithPayment, deleteUserOrder, verifyUserPayment } from '../../Service/OrderService';
+import { clearUserCart } from '../../Service/CartService';
+// import Razorpay from 'razorpay';
+
 
 const PlaceOrder = () => {
-  const { foodPowderList, quantities } = useContext(StoreContext);
+  const { foodPowderList, quantities, token, setQuantities} = useContext(StoreContext);
 
   const cartItems = foodPowderList.filter(powder => quantities[powder.id] > 0);
 
+  const navigate = useNavigate();
+
   const {subTotal, shippingCharger, tax, fullTotal }=calculateCartTotals(cartItems, quantities);
+
+  const [data, setData] = useState({
+        firstName:"",
+        lastName:"",
+        email:"",
+        phoneNumber:"",
+        address:"",
+        city:"",
+        state:"",
+        country:"",
+        zipCode:""
+      });
+
+    const onChangeHandle = (Event) =>{
+      const name = Event.target.name;
+      const value = Event.target.value;
+      setData(data => ({...data, [name]:value}));
+    }
+
+    const onSumbitHandler = async(Event) => {
+        Event.preventDefault();
+        // console.log(data);
+        const orderData = {
+          userAddress: `${data.firstName} ${data.lastName},
+          ${data.address},
+          ${data.city},
+          ${data.state},
+          ${data.country}-${data.zipCode}.
+          phone:${data.phoneNumber}.`,
+          phoneNumber: data.phoneNumber,
+          email: data.email,
+          orderedItems: cartItems.map(item => ({
+              foodId: item.id,
+              quantity: quantities[item.id],
+              name:item.name,
+              price: item.price * quantities[item.id],
+              category: item.category,
+              imageUrl: item.imageUrl,
+              description: item.description
+            })),
+            amount: fullTotal.toFixed(2),
+            orderStatus: "Preparing"
+        };
+        // console.log(orderData);
+
+        try {
+          const response = await createUserOrderWithPayment(token, orderData);
+          if(response.status === 201 && response.data.razorpayOrderId){
+            //initiate the payment
+            initiateRazorpayPayment(response.data);
+          } else {
+            toast.error("Unable to place order, Please try again.");
+          }
+        } catch (error) {
+          toast.error("Unable to place order, Please try again.");
+          throw error;
+        }
+    };
+
+    const initiateRazorpayPayment =  (order) => {
+      const options = {
+        key: RAZORPAY_KEY,
+        amount: order.amount,
+        currency: "INR",
+        name: "Natual FoodPowders",
+        description:"Food order payment",
+        order_id: order.razorpayOrderId,
+        handler: async function(razorpayResponse) {
+          await verifyPayment(razorpayResponse);
+        },
+        prefill:{
+          name:`${data.firstName} ${data.lastName}`,
+          email: data.email,
+          contact: data.phoneNumber
+        },
+        theme:{color: "#3399cc"},
+        modal:{
+          ondismiss: async function() {
+            toast.error("Payment Cancelled.");
+            await deleteOrder(order.id);
+          }
+        }
+      };
+      const razorpay = new window.Razorpay(options);
+      razorpay.open();
+
+    };
+
+    const verifyPayment = async(razorpayResponse) => {
+      const paymentData = {
+        razorpay_payment_id: razorpayResponse.razorpay_payment_id,
+        razorpay_order_id: razorpayResponse.razorpay_order_id,
+        razorpay_signature: razorpayResponse.razorpay_signature
+      };
+      try {
+        const response = await verifyUserPayment(token, paymentData);
+      if(response.status === 200){
+        toast.success("Payment Successfull");
+        await clearCart();
+        navigate('/myorders');
+      }else {
+        toast.error("Payment failed please try again.");
+        navigate('/myorders');
+      }
+      } catch (error) {
+        toast.error('Payment failed please try again.');
+      }
+    };
+
+    const deleteOrder = async (orderId) =>{
+      try {
+        await deleteUserOrder(token, orderId);
+      } catch (error) {
+        toast.error("Something went wrong contact support.");
+      }
+    };
+
+    const clearCart = async () => {
+      try {
+        await clearUserCart(token);
+        setQuantities({});
+      } catch (error) {
+        toast.error("Error while clearing cart.");
+      }
+    };
+
+
   return (
     <div className="container">
       <main>
@@ -25,7 +162,7 @@ const PlaceOrder = () => {
             <ul className="list-group mb-3">
               {
                 cartItems.map(item => {
-                    console.log(item);
+                  // console.log(item);
                     return(
                     <li key={item.id} className="list-group-item d-flex justify-content-between lh-sm">
                         <div>
@@ -57,20 +194,20 @@ const PlaceOrder = () => {
 
           <div className="col-md-7 col-lg-8">
             <h4 className="mb-3">Billing address</h4>
-            <form className="needs-validation" noValidate>
+            <form className="needs-validation"  onSubmit={onSumbitHandler}>
               <div className="row g-3">
                 <div className="col-sm-6">
                   <label htmlFor="firstName" className="form-label">
                     First name
                   </label>
-                  <input type="text" className="form-control" id="firstName" required />
+                  <input type="text" className="form-control" id="firstName" name="firstName" onChange={onChangeHandle} value={data.firstName} required />
                 </div>
 
                 <div className="col-sm-6">
                   <label htmlFor="lastName" className="form-label">
                     Last name
                   </label>
-                  <input type="text" className="form-control" id="lastName" required />
+                  <input type="text" className="form-control" id="lastName" name="lastName" onChange={onChangeHandle} value={data.lastName} required />
                 </div>
 
                 <div className="col-12">
@@ -79,7 +216,7 @@ const PlaceOrder = () => {
                   </label>
                   <div className="input-group has-validation">
                     <span className="input-group-text">@</span>
-                    <input type="email" className="form-control" id="email" placeholder="Email" required />
+                    <input type="email" className="form-control" id="email" placeholder="Email" name="email" onChange={onChangeHandle} value={data.email} required />
                   </div>
                 </div>
 
@@ -87,21 +224,28 @@ const PlaceOrder = () => {
                   <label htmlFor="phone" className="form-label">
                     Phone Number
                   </label>
-                  <input type="number" className="form-control" id="phone" placeholder="+91-9876543210" required />
+                  <input type="number" className="form-control" id="phone" placeholder="9876543210" name="phoneNumber" onChange={onChangeHandle} value={data.phoneNumber} required />
                 </div>
 
                 <div className="col-12">
                   <label htmlFor="address" className="form-label">
                     Address
                   </label>
-                  <input type="text" className="form-control" id="address" placeholder="1234 Main St" required />
+                  <input type="text" className="form-control" id="address" placeholder="1234 Main St" name="address" onChange={onChangeHandle} value={data.address} required />
+                </div>
+
+                <div className="col-12">
+                  <label htmlFor="city" className="form-label">
+                    City
+                  </label>
+                  <input type="text" className="form-control" id="city" placeholder="trichy" name="city" onChange={onChangeHandle} value={data.city} required />
                 </div>
 
                 <div className="col-md-4">
                   <label htmlFor="state" className="form-label">
                     State
                   </label>
-                  <select className="form-select" id="state" required>
+                  <select className="form-select" id="state" name="state" onChange={onChangeHandle} value={data.state} required>
                     <option value="">Choose...</option>
                     <option value="Tamil Nadu">Tamil Nadu</option>
                   </select>
@@ -111,7 +255,7 @@ const PlaceOrder = () => {
                   <label htmlFor="country" className="form-label">
                     Country
                   </label>
-                  <select className="form-select" id="country" required>
+                  <select className="form-select" id="country" name="country" onChange={onChangeHandle} value={data.country} required>
                     <option value="">Choose...</option>
                     <option value='India'>India</option>
                   </select>
@@ -119,10 +263,9 @@ const PlaceOrder = () => {
 
                 <div className="col-md-3">
                   <label htmlFor="zip" className="form-label">
-                    Zip
+                    Zip-Code
                   </label>
-                  <input type="number" className="form-control" id="zip" placeholder="600-000" required />
-                  <div className="invalid-feedback" >Zip code required.</div>
+                  <input type="number" className="form-control" id="zipCode" placeholder="600-000" name="zipCode" onChange={onChangeHandle} value={data.zipCode} required />
                 </div>
               </div>
 

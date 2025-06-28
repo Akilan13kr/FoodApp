@@ -1,18 +1,19 @@
 import React, { useContext, useEffect, useState } from 'react';
-import axios from 'axios';
+import { StoreContext } from '../../Context/StoreContext';
 import { toast } from 'react-toastify';
 import { assets } from '../../assets/assets';
-import './Orders.css';
-import { getAllOrders, updataOrderStatus } from '../../Services/OrderService';
+import './MyOrders.css';
+import { fetchOrdersOfUser } from '../../Service/OrderService';
 
-const Orders = () => {
+const MyOrders = () => {
 
+    const {token} = useContext(StoreContext);
 
     const [data, setData] = useState([]);
 
     const fetchOrders = async () => {
         try {
-            const response = await getAllOrders()
+            const response = await fetchOrdersOfUser(token);
             setData(response);
         } catch (error) {
             toast.error("Error fetching order details.");
@@ -20,16 +21,11 @@ const Orders = () => {
         }
     }
 
-    const updateStatus = async(Event, orderId) =>  {
-      const response = await updataOrderStatus(Event, orderId)
-      if(response.status === 200){
-        await fetchOrders();
-      }
-    }
-
     useEffect(() => {
-        fetchOrders();
-    }, []);
+        if(token){
+            fetchOrders();
+        }
+    }, [token]);
 
   return (
     <div className="container">
@@ -37,38 +33,36 @@ const Orders = () => {
             <div className="col-11 card">
                 <table className='table table-responsive'>
                     <tbody>
-                        {
+                        { !(data.length == 0) ?
                             data.map((order, index) => {
                                 return(
                                     <tr key={index}>
                                         <td>
-                                            <img src={assets.parcel} alt="" height={46} width={48} />
+                                            <img src={assets.delivery} alt="" height={46} width={48} />
                                         </td>
-                                        <td>
-                                         <div>
-                                            {
+                                        <td>{
                                             order.orderedItems.map((item, index) => {
                                                 if(index === order.orderedItems.length - 1){
                                                     return item.name + " x " + item.quantity
                                                 } else {
                                                     return item.name + " x " + item.quantity + ", ";//for second line
                                                 }
-                                            })}
-                                            <div>{order.userAddress}</div>
-                                         </div>
-                                        </td>
+                                            })
+                                        }</td>
                                         <td>&#8377;{order.amount.toFixed(2)}</td>
                                         <td>Items: {order.orderedItems.length}</td>
+                                        <td className='fw-bold text-capitalize'>&#x25cf;{order.orderStatus}</td>
                                         <td>
-                                            <select  className="form-control" onChange={(Event) => updateStatus(Event, order.id)} value={order.orderStatus}>
-                                              <option value="Food Preparinig">Food Preparing</option>
-                                              <option value="Out for delivery">Out of delivery</option>
-                                              <option value="Delivered">Delivered</option>
-                                            </select>
+                                            <button className='btn btn-sm btn-warning' onClick={fetchOrders}>
+                                                <i className='bi bi-arrow-clockwise'></i>
+                                            </button>
                                         </td>
                                     </tr>
                                 )
-                            })
+                            }) :
+                            (
+                                <p className='fw-bold'>No Order History</p>
+                            )
                         }
                     </tbody>
                 </table>
@@ -78,4 +72,4 @@ const Orders = () => {
   )
 }
 
-export default Orders;
+export default MyOrders;

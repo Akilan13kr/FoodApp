@@ -5,11 +5,13 @@ import healthmix from './healthmix.jpg';
 import masalapowder from './masalapowder.jpg';
 import ricepowder from './ricepowder.jpg';
 import userIcon from './usericon.jpg';
+import delivery from './delivery.jpg';
 
 export const assets = {
     logo,
     cart,
-    userIcon
+    userIcon, 
+    delivery
 }
 
 export const categories =[

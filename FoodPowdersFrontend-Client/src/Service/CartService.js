@@ -29,3 +29,11 @@ export const getCartData = async(token) =>{
         throw error;
     }
 }
+
+export const clearUserCart = async(token) => {
+    try {
+        await axios.delete(API_URL, {headers: {'Authorization': `Bearer ${token}`}});
+    } catch (error) {
+        throw error;
+    }
+}
