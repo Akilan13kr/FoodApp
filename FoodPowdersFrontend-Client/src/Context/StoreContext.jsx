@@ -2,13 +2,15 @@ import { createContext, useEffect, useState } from "react";
 import { fetchFoodPowderList } from "../Service/foodService";
 import axios from "axios";
 import { addToCart, getCartData, removeQuantityFromCart } from "../Service/CartService";
+import { fetchCategoryList } from "../Service/CategoryService";
 
 
 export const StoreContext = createContext(null);
 
 export const StoreContextProvider = (props) =>{
 
-    const [foodPowderList, setFoodPowderList]= useState([]);
+    const [foodPowderList, setFoodPowderList] = useState([]);
+    const [categoryList, setCategoryList] = useState([]);
     const [quantities, setQuantities] = useState({});
     const [token, setToken] = useState("");
 
@@ -39,6 +41,7 @@ export const StoreContextProvider = (props) =>{
 
     const contextValue = {
         foodPowderList,
+        categoryList,
         increaseQuantity,
         decreaseQuantity,
         setQuantities,
@@ -55,6 +58,8 @@ export const StoreContextProvider = (props) =>{
         async function loadData(){
             const data = await fetchFoodPowderList();
             setFoodPowderList(data);
+            const category = await fetchCategoryList();
+            setCategoryList(category);
             // console.log(data);
             if(localStorage.getItem('token:')){
                 setToken(localStorage.getItem('token:'));

@@ -1,8 +1,10 @@
-import React, { useRef }from 'react';
-import { categories } from '../../assets/assets';
+import React, { useContext, useRef }from 'react';
 import './ExploreMenu.css';
+import { StoreContext } from '../../Context/StoreContext';
 
 const ExploreMenu = ({category, setCategory}) => {
+  const {categoryList} = useContext(StoreContext);
+
   const menuRef = useRef(null);
   const scrollLeft = () => {
     if(menuRef.current){
@@ -27,11 +29,11 @@ const ExploreMenu = ({category, setCategory}) => {
     <p>Explore Lists of Powders from the Category</p>
     <div className="d-flex  gap-4 overflow-auto explore-menu-list" ref={menuRef}>{/* justify-content-between */}
       {
-        categories.map((item, index) => {
+        categoryList.map((item, index) => {
           return(
-            <div key={index} className="text-center explore-menu-list-item" onClick={() => setCategory(prev => prev === item.category ? "All" : item.category)}>
-                <img src={item.icon} alt="" className={item.category === category ? 'rounded-circle active': 'rounded-circle'} height={128} width={128} />
-                <p className='mt-2 fw-bold'>{item.category}</p>
+            <div key={index} className="text-center explore-menu-list-item" onClick={() => setCategory(prev => prev === item.categoryName ? "All" : item.categoryName)}>
+                <img src={item.imageUrl} alt="" className={item.category === category ? 'rounded-circle active': 'rounded-circle'} height={128} width={128} />
+                <p className='mt-2 fw-bold'>{item.categoryName}</p>
             </div>
           )
         })
