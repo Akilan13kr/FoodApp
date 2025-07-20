@@ -1,4 +1,3 @@
-import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import './ListFoodPowder.css';
@@ -37,6 +36,8 @@ const ListFoodPowder = () => {
   return (
     <div className='py-5 row justify-content-center'>
       <div className="col-li card">
+      <h2 className="mb-1">List Of Category</h2>
+      <hr/>
         <table className="table">
           <thead>
             <tr>

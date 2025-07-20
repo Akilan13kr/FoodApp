@@ -1,0 +1,10 @@
+.table td{
+    vertical-align:middle;
+} 
+.dropdown-menu-center {
+    left: 60% !important;
+    right: auto !important;
+    transform: translateX(-50%) !important;
+    min-width: max-content; /* Optional: makes dropdown just wide enough */
+  }
+  

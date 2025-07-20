@@ -7,6 +7,8 @@ import SideBar from './Components/SideBar/SideBar';
 import MenuBar from './Components/MenuBar/MenuBar';
 import ListFoodPowder from './Pages/ListFoodPowder/ListFoodPowder';
 import { ToastContainer } from 'react-toastify';
+import AddCategory from './Pages/AddCategory/AddCategory';
+import ListCategory from './Pages/ListCategory/ListCategory';
 
 const App = () => {
   const [sidebarVisible, setSidebarVisible] = useState(true);
@@ -25,6 +27,8 @@ const App = () => {
                 <ToastContainer />
                 <div className="container-fluid">
                     <Routes>
+                      <Route path="/addCategory" element={<AddCategory />} />
+                      <Route path="/listCategory" element={<ListCategory />} />
                       <Route path="/add" element={<AddFood />} />
                       <Route path="/list" element={<ListFoodPowder />} />
                       <Route path="/orders" element={<Orders />}/>
