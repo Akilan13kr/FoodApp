@@ -6,21 +6,28 @@ import com.example.Akilan.FoodPowdersApi.IO_Objects.FoodPowderResponse;
 import com.example.Akilan.FoodPowdersApi.Repository.FoodPowderRepository;
 import com.google.cloud.firestore.*;
 import lombok.AllArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 @Service
-@AllArgsConstructor
 public class FoodPowderServiceImplementation implements FoodPowderService{
-    
-    
+
+    private final CategoryService categoryService;
     private final FoodPowderRepository foodPowderRepository;
-    
+
+    public FoodPowderServiceImplementation(@Lazy CategoryService categoryService, FoodPowderRepository foodPowderRepository) {
+        this.categoryService = categoryService;
+        this.foodPowderRepository = foodPowderRepository;
+    }
+
     
 
     @Override
@@ -28,8 +35,9 @@ public class FoodPowderServiceImplementation implements FoodPowderService{
         String imagepublicUrl = foodPowderRepository.uploadImage(imageFile);
         FoodPowderEntity newfoodPowderEntity = convertToEntity(foodPowderRequest);
         newfoodPowderEntity.setImageUrl(imagepublicUrl);
-        return convertToResponse(foodPowderRepository.addFoodPowder(newfoodPowderEntity));
-        
+        newfoodPowderEntity = foodPowderRepository.addFoodPowder(newfoodPowderEntity);
+        categoryService.updateListInCategory(newfoodPowderEntity);
+        return convertToResponse(newfoodPowderEntity);
     }
 
     @Override
@@ -54,6 +62,7 @@ public class FoodPowderServiceImplementation implements FoodPowderService{
         String imageUrl = foodPowderResponse.getImageUrl();
         String filename = "ImagesOfFood/" + imageUrl.substring(imageUrl.lastIndexOf("/")+ 1);
         if(foodPowderRepository.deleteImage(filename)){
+            categoryService.removeFoodFromCategory(id , foodPowderResponse.getCategory(), foodPowderResponse.getName());
             foodPowderRepository.deleteFood(id);
         }
     }

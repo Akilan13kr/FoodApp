@@ -82,8 +82,8 @@ public class FoodPowderRepositoryImplementationByFirebase implements FoodPowderR
     }
 
 
-    public boolean deleteImage(String imageName) {
-        Blob blob = bucket.get(imageName);
+    public boolean deleteImage(String imageUrl) {
+        Blob blob = bucket.get(imageUrl);
 
         if (blob == null || !blob.exists()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "File not found");

@@ -18,14 +18,14 @@ import java.util.concurrent.ExecutionException;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/api/foodpowders")
-@CrossOrigin("*")
+@RequestMapping("/api")
+//@CrossOrigin("*")
 public class FoodPowderController {
 
     @Autowired
     private final FoodPowderServiceImplementation foodPowderServiceImplementation;
 
-    @PostMapping
+    @PostMapping("/foodpowders")
     public FoodPowderResponse addFoodPowder( @RequestPart("food") String foodPowderString, @RequestPart("file") MultipartFile image) throws ExecutionException, InterruptedException, IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         FoodPowderRequest foodPowderRequest = null;
@@ -34,17 +34,17 @@ public class FoodPowderController {
         return foodPowderResponse;
     }
 
-    @GetMapping
+    @GetMapping("/foodpowders")
     public List<FoodPowderResponse> readFoodPowders() throws ExecutionException, InterruptedException {
         return foodPowderServiceImplementation.readFoodPowders();
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/foodpowders/{id}")
     public FoodPowderResponse readFoodPowder(@PathVariable String id) throws ExecutionException, InterruptedException {
         return foodPowderServiceImplementation.readFoodPowder(id);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/foodpowders/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteFoodPowder(@PathVariable String id) throws ExecutionException, InterruptedException {
         foodPowderServiceImplementation.deleteFood(id);

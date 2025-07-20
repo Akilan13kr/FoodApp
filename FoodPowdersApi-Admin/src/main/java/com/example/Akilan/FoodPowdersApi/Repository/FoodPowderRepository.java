@@ -14,6 +14,6 @@ public interface FoodPowderRepository {
     String uploadImage(MultipartFile imagefile) throws IOException;
     List<QueryDocumentSnapshot> readFoodPowders() throws InterruptedException, ExecutionException;
     DocumentSnapshot readFoodPowder(String id) throws InterruptedException, ExecutionException;
-    boolean deleteImage(String imageName);
+    boolean deleteImage(String imageUrl);
     void deleteFood(String id) throws ExecutionException, InterruptedException;
 }
