@@ -1,21 +1,10 @@
-# Stage 1: Build with Maven and cache dependencies
+# Stage 1: Build the Spring Boot app
 FROM maven:3.9.6-eclipse-temurin-21 AS build
-
 WORKDIR /app
-
-# Copy only pom.xml and download dependencies first
-COPY pom.xml .
-COPY .mvn .mvn
-COPY mvnw .
-RUN ./mvnw dependency:go-offline -B
-
-# Copy the rest of the code
 COPY . .
+RUN mvn clean package -DskipTests
 
-# Build the app
-RUN ./mvnw clean package -DskipTests
-
-# Stage 2: Final image with only the JAR
+# Stage 2: Run the JAR using JRE
 FROM eclipse-temurin:21
 WORKDIR /app
 COPY --from=build /app/target/FoodPowdersApi-0.0.1-SNAPSHOT.jar app.jar
