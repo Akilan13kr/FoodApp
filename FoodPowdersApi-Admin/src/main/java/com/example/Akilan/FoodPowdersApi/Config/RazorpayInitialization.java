@@ -3,6 +3,7 @@ package com.example.Akilan.FoodPowdersApi.Config;
 import com.example.Akilan.FoodPowdersApi.Entity.RazorpayCredentialsEntity;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Component;
+import java.util.Base64;
 
 @Component
 public class RazorpayInitialization {
@@ -12,7 +13,8 @@ public class RazorpayInitialization {
     public RazorpayInitialization() {
         try {
             // 1. Read JSON from environment variable
-            String razorpayJson = System.getenv("RAZORPAY_KEY_JSON");
+            String razorpayJson = new String(Base64.getDecoder().decode(System.getenv("RAZORPAY_KEY_JSON")));
+
 
             if (razorpayJson == null || razorpayJson.isEmpty()) {
                 throw new IllegalStateException("RAZORPAY_KEY_JSON environment variable is missing or empty.");
