@@ -2,10 +2,7 @@ package com.example.Akilan.FoodPowdersApi.Config;
 
 import com.example.Akilan.FoodPowdersApi.Entity.RazorpayCredentialsEntity;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
-
-import java.io.IOException;
 
 @Component
 public class RazorpayInitialization {
@@ -13,21 +10,28 @@ public class RazorpayInitialization {
     private RazorpayCredentialsEntity credentials;
 
     public RazorpayInitialization() {
-        ObjectMapper objectMapper = new ObjectMapper();
         try {
-            credentials = objectMapper.readValue(
-                    new ClassPathResource("razorpay-credentials.json").getInputStream(),
-                    RazorpayCredentialsEntity.class);
-        } catch (IOException e) {
+            // 1. Read JSON from environment variable
+            String razorpayJson = System.getenv("RAZORPAY_KEY_JSON");
+
+            if (razorpayJson == null || razorpayJson.isEmpty()) {
+                throw new IllegalStateException("RAZORPAY_KEY_JSON environment variable is missing or empty.");
+            }
+
+            // 2. Parse JSON string into credentials object
+            ObjectMapper objectMapper = new ObjectMapper();
+            credentials = objectMapper.readValue(razorpayJson, RazorpayCredentialsEntity.class);
+        } catch (Exception e) {
+            System.err.println("❌ Razorpay initialization failed.");
             e.printStackTrace();
         }
     }
 
     public String getKeyId() {
-        return credentials.getKey_id();
+        return credentials != null ? credentials.getKey_id() : null;
     }
 
     public String getKeySecret() {
-        return credentials.getKey_secret();
+        return credentials != null ? credentials.getKey_secret() : null;
     }
 }
