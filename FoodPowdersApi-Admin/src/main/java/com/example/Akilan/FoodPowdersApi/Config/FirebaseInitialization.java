@@ -9,6 +9,8 @@ import javax.annotation.PostConstruct;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Base64;
+
 
 @Service
 public class FirebaseInitialization {
@@ -17,7 +19,8 @@ public class FirebaseInitialization {
     public void initialization() {
         try {
             // 1. Read JSON from environment variable
-            String jsonKey = System.getenv("GOOGLE_KEY_JSON");
+            String jsonKey = new String(Base64.getDecoder().decode(System.getenv("GOOGLE_KEY_JSON")));
+
 
             if (jsonKey == null || jsonKey.isEmpty()) {
                 throw new IllegalStateException("GOOGLE_KEY_JSON environment variable is missing or empty.");
