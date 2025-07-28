@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = 'http://localhost:8080/api/orders';
+const API_URL = "https://foodapp-e3qb.onrender.com/api/orders";
 
 export const fetchOrdersOfUser = async (token) =>{
     try {
