@@ -26,7 +26,9 @@ const FoodPowderDisplay = ({category, searchText}) => {
                 })
             ) : (
                 <div className="text-center mt-4">
-                    <h4>No FoodPowder Found</h4>
+                    <h4>No FoodPowder Found </h4>
+                    <h4>(or)</h4>
+                    <h4>Backend Server(Spring in Render server) may be in sleep due to its free tier. Please refresh the page after few min(Backend may take few mins to awake)</h4>
                 </div>
             )}
             
